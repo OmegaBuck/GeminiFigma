@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0f0f13;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --accent-color: #7c4dff;
+      --accent-glow: rgba(124, 77, 255, 0.4);
+      --text-main: #f0f0f5;
+      --text-dim: #a0a0b0;
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0 0 16px 0;
+      background: linear-gradient(135deg, #fff 0%, #a0a0b0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .input-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="password"],
+    textarea {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      color: white;
+      font-family: inherit;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    button {
+      width: 100%;
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.2s;
+      margin-top: 8px;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .preview-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      gap: 12px;
+      padding-bottom: 12px;
+    }
+
+    #frame-preview {
+      width: 100%;
+      border-radius: 8px;
+      display: none;
+      border: 1px solid var(--border-color);
+    }
+
+    .status {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .loading-pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      margin-left: 4px;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.8);
+        opacity: 0.5;
+      }
+
+      50% {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+      }
+    }
+
+    .response-area {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--text-main);
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      margin-top: 12px;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="glass-card">
+    <h1>Gemini AI Partner</h1>
+
+    <div class="input-group">
+      <label for="api-key">Gemini API Key</label>
+      <input type="password" id="api-key" placeholder="Paste your API key here...">
+    </div>
+
+    <button id="btn-select">Select Frame</button>
+  </div>
+
+  <div class="preview-container">
+    <div id="status-text" class="status">Ready to design.</div>
+    <img id="frame-preview" />
+
+    <div id="prompt-area" style="display: none;">
+      <div class="input-group">
+        <label for="user-prompt">Desired feedback or goal</label>
+        <textarea id="user-prompt" rows="3"
+          placeholder="e.g., 'How can I make the navigation clearer?' or 'Suggest UI improvements based on Fitts's Law'"></textarea>
+      </div>
+      <button id="btn-analyze">Analyze Design</button>
+    </div>
+
+    <div id="response-area" class="response-area"></div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+{
+    "name": "gemini-figma-plugin",
+    "version": "1.0.0",
+    "description": "Figma plugin to analyze designs using Google Gemini API",
+    "main": "dist/code.js",
+    "scripts": {
+        "build": "webpack --mode=production",
+        "dev": "webpack --mode=development --watch"
+    },
+    "devDependencies": {
+        "@figma/plugin-typings": "^1.92.0",
+        "css-loader": "^6.8.1",
+        "html-inline-script-webpack-plugin": "^3.2.1",
+        "html-webpack-plugin": "^5.5.3",
+        "style-loader": "^3.3.3",
+        "ts-loader": "^9.4.4",
+        "typescript": "^5.1.6",
+        "webpack": "^5.88.2",
+        "webpack-cli": "^5.1.4"
+    }
+}
