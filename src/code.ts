@@ -18,33 +18,36 @@ figma.ui.onmessage = async (msg) => {
 
     if (msg.type === 'analyze-frame') {
         const selection = figma.currentPage.selection;
+        const frames = selection.filter(node => node.type === 'FRAME') as FrameNode[];
 
-        if (selection.length !== 1 || selection[0].type !== 'FRAME') {
-            figma.notify('Please select exactly one Frame to analyze.');
+        if (frames.length === 0) {
+            figma.notify('Please select at least one Frame to analyze.');
             return;
         }
 
-        const frame = selection[0] as FrameNode;
-
         try {
-            // Export frame as PNG
-            const bytes = await frame.exportAsync({
-                format: 'PNG',
-                constraint: { type: 'SCALE', value: 2 },
-            });
+            const capturedFrames = await Promise.all(frames.map(async frame => {
+                const bytes = await frame.exportAsync({
+                    format: 'PNG',
+                    constraint: { type: 'SCALE', value: 2 },
+                });
+                return {
+                    name: frame.name,
+                    imageData: bytes
+                };
+            }));
 
-            // Send the bytes back to the UI
             figma.ui.postMessage({
-                type: 'frame-captured',
-                imageData: bytes,
-                frameName: frame.name
+                type: 'frames-captured',
+                frames: capturedFrames
             });
 
         } catch (error) {
             console.error(error);
-            figma.notify('Failed to capture frame image.');
+            figma.notify('Failed to capture frame images.');
         }
     }
+
 
     if (msg.type === 'notify') {
         figma.notify(msg.message);

@@ -15,6 +15,7 @@
       --text-main: #f0f0f5;
       --text-dim: #a0a0b0;
       --border-color: rgba(255, 255, 255, 0.1);
+      --nav-bg: rgba(255, 255, 255, 0.03);
     }
 
     body {
@@ -22,12 +23,59 @@
       color: var(--text-main);
       font-family: 'Outfit', sans-serif;
       margin: 0;
-      padding: 16px;
+      padding: 0;
       display: flex;
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
       box-sizing: border-box;
+    }
+
+    /* Navigation Header */
+    header {
+      display: flex;
+      padding: 12px 16px;
+      gap: 16px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--nav-bg);
+      backdrop-filter: blur(10px);
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .tab-btn.active {
+      color: var(--text-main);
+      background: var(--card-bg);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .view {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .view.active {
+      display: flex;
     }
 
     .glass-card {
@@ -64,6 +112,7 @@
     }
 
     input[type="password"],
+    input[type="text"],
     textarea {
       width: 100%;
       background: rgba(0, 0, 0, 0.2);
@@ -83,7 +132,7 @@
       box-shadow: 0 0 0 2px var(--accent-glow);
     }
 
-    button {
+    button.primary {
       width: 100%;
       background: var(--accent-color);
       color: white;
@@ -96,36 +145,52 @@
       margin-top: 8px;
     }
 
-    button:active {
+    button.primary:active {
       transform: scale(0.98);
     }
 
-    button:disabled {
+    button.primary:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
 
-    .preview-container {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      gap: 12px;
-      padding-bottom: 12px;
+    /* Analyze View Specifics */
+    .preview-section {
+      margin-bottom: 20px;
     }
 
-    #frame-preview {
+    #preview-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .preview-thumb {
       width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
       border-radius: 8px;
-      display: none;
       border: 1px solid var(--border-color);
+      background: #000;
     }
 
-    .status {
-      font-size: 0.8rem;
+    .frame-badge {
+      font-size: 0.7rem;
       color: var(--text-dim);
       text-align: center;
-      margin-top: 8px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-top: 4px;
+    }
+
+
+    .status {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      text-align: center;
+      margin: 12px 0;
     }
 
     .loading-pulse {
@@ -156,45 +221,97 @@
     }
 
     .response-area {
-      font-size: 0.9rem;
-      line-height: 1.5;
+      font-size: 0.95rem;
+      line-height: 1.6;
       color: var(--text-main);
-      padding: 12px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 12px;
-      margin-top: 12px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
       display: none;
+      margin-top: 8px;
+    }
+
+    .response-area h1 {
+      font-size: 1.1rem;
+      color: var(--accent-color);
+      margin-top: 24px;
+      margin-bottom: 12px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border-color);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: none;
+      -webkit-text-fill-color: var(--accent-color);
+    }
+
+    .response-area h2 {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+
+    /* Settings View Specifics */
+    .settings-info {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+      margin-top: 8px;
+    }
+
+    .settings-info a {
+      color: var(--accent-color);
+      text-decoration: none;
     }
   </style>
 </head>
 
 <body>
-  <div class="glass-card">
-    <h1>Gemini AI Partner</h1>
+  <header>
+    <button id="tab-analyze" class="tab-btn active">Analyze</button>
+    <button id="tab-settings" class="tab-btn">Settings</button>
+  </header>
 
-    <div class="input-group">
-      <label for="api-key">Gemini API Key</label>
-      <input type="password" id="api-key" placeholder="Paste your API key here...">
-    </div>
-
-    <button id="btn-select">Select Frame</button>
-  </div>
-
-  <div class="preview-container">
-    <div id="status-text" class="status">Ready to design.</div>
-    <img id="frame-preview" />
-
-    <div id="prompt-area" style="display: none;">
-      <div class="input-group">
-        <label for="user-prompt">Desired feedback or goal</label>
-        <textarea id="user-prompt" rows="3"
-          placeholder="e.g., 'How can I make the navigation clearer?' or 'Suggest UI improvements based on Fitts's Law'"></textarea>
+  <main>
+    <!-- View: Analyze -->
+    <div id="view-analyze" class="view active">
+      <div class="preview-section">
+        <button id="btn-select" class="primary">Select Design Frame(s)</button>
+        <div id="status-text" class="status">Pick frames to start.</div>
+        <div id="preview-container"></div>
       </div>
-      <button id="btn-analyze">Analyze Design</button>
+
+
+      <div id="prompt-area" style="display: none;">
+        <div class="input-group">
+          <label for="user-prompt">UI/UX Goal (Optional)</label>
+          <textarea id="user-prompt" rows="3"
+            placeholder="e.g., 'Suggest layout improvements' or 'Review against Fitts's Law'"></textarea>
+        </div>
+        <button id="btn-analyze" class="primary">Analyze Design</button>
+      </div>
+
+      <div id="response-area" class="response-area"></div>
     </div>
 
-    <div id="response-area" class="response-area"></div>
-  </div>
+    <!-- View: Settings -->
+    <div id="view-settings" class="view">
+      <h1>Settings</h1>
+      <div class="glass-card">
+        <div class="input-group">
+          <label for="api-key">Gemini API Key</label>
+          <input type="password" id="api-key" placeholder="Paste your API key here...">
+          <div class="settings-info">
+            Your key is stored locally in Figma. <br>
+            Don't have a key? <a href="https://aistudio.google.com/app/apikey" target="_blank">Get one for free
+              here.</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </body>
 
 </html>
